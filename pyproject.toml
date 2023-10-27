@@ -1,0 +1,33 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fasteasySD"
+version = "0.1.2"
+authors = [
+  { name="WaGaNaWa", email="m4a1carbin4@gmail.com" },
+]
+description = " Simplified library for comfyUI-lcm extensions. support txt2img or img2img"
+readme = "README.md"
+requires-python = ">=3.10"
+
+dependencies=[
+    "diffusers>=0.21.4",
+    "numpy>=1.26.1",
+    "torch>=2.1.0",
+    "torchvision>=0.16.0",
+    "transformers>=4.34.1",
+    "accelerate>=0.24.0"
+]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: OS Independent",
+]
+
+[tool.setuptools.package-data]
+'fasteasySD' = ['*.json']
+
+[project.urls]
+"Homepage" = "https://github.com/m4a1carbin4/fasteasysd"
+"Bug Tracker" = "https://github.com/m4a1carbin4/fasteasysd/issues"
