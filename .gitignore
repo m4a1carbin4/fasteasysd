@@ -1,1 +1,7 @@
 /venv
+/dist
+/.vscode
+/fasteasySD.egg-info
+/tests
+/__pycache__
+
