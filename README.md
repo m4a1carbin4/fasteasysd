@@ -44,6 +44,11 @@ test.make_image(mode="img2img",prompt="masterpeice, best quality, anime style",s
 test.make_image(mode="txt2img",prompt="masterpeice, best quality, anime style",seed=0,steps=4,cfg=8,height=768,width=512,num_images=2)
 ```
 
+# installation
+
+```bash
+pip install fasteasySD 
+```
 
 # Documentation
 
