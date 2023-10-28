@@ -1,7 +1,7 @@
 venv
-dist
-.vscode
-fasteasySD.egg-info
-tests
+dist/*
+.vscode/*
+fasteasySD.egg-info/*
+tests/*
 __pycache__
 
