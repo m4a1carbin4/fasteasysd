@@ -46,6 +46,10 @@ test.make_image(mode="txt2img",prompt="masterpeice, best quality, anime style",s
 
 # installation
 
+<b>Make Sure Install the Pytorch version for your system.</b>
+
+find install Pytorch : https://pytorch.org/get-started/locally/
+
 ```bash
 pip install fasteasySD 
 ```
