@@ -299,7 +299,7 @@ class LatentConsistencyModelImg2ImgPipeline(DiffusionPipeline):
 
         # 3.5 encode image
         image = self.image_processor.preprocess(image=image)
-
+        
         # 4. Prepare timesteps
         self.scheduler.set_timesteps(strength, num_inference_steps, lcm_origin_steps)
         # timesteps = self.scheduler.timesteps

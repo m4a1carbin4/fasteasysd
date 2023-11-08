@@ -1,4 +1,4 @@
-from .lcm.lcm_scheduler import LCMScheduler
+from .lcm.lcm_scheduler import LCMScheduler as LCMScheduler_old
 from .lcm.lcm_pipline import LatentConsistencyModelPipeline
 from .lcm.lcm_i2i_pipline import LatentConsistencyModelImg2ImgPipeline
 from torchvision import transforms
@@ -20,7 +20,7 @@ def make_seed(seed: int, random_seed:bool) -> int:
 
 class LCM_Sampler:
     def __init__(self):
-        self.scheduler = LCMScheduler.from_pretrained(
+        self.scheduler = LCMScheduler_old.from_pretrained(
             path.join(path.dirname(__file__), "scheduler_config.json"))
         self.pipe = None
     
@@ -60,7 +60,7 @@ class LCM_Sampler:
     
 class LCM_img2img_Sampler:
     def __init__(self):
-        self.scheduler = LCMScheduler.from_pretrained(
+        self.scheduler = LCMScheduler_old.from_pretrained(
             path.join(path.dirname(__file__), "scheduler_config.json"))
         self.pipe = None
 
@@ -68,6 +68,8 @@ class LCM_img2img_Sampler:
         if self.pipe is None:
             self.pipe = LatentConsistencyModelImg2ImgPipeline.from_pretrained(
                 pretrained_model_name_or_path="SimianLuo/LCM_Dreamshaper_v7",
+                custom_revision="main",
+                revision="fb9c5d",
                 safety_checker=None,
             )
 
@@ -329,3 +331,21 @@ class FastEasySD:
         
         else :
             return False
+
+test = FastEasySD(device='cpu',use_fp16=False)
+
+#~~~#
+
+mode = "img2img"
+
+images = test.make(mode=mode,seed=0,steps=4,prompt_strength=0.5,cfg=8,prompt="masterpeice, best quality, anime style",height=1063,width=827,num_images=2,input_image_dir="input.jpg")
+
+if mode == "txt2img":
+            
+    pil_images = test.return_PIL(images)
+
+    test.save_PIL(pils=pil_images,save_name="./fesd")
+
+elif mode == "img2img":
+            
+    test.i2i_batch_save(images_list=images,base_name="./fesd_i2i")
