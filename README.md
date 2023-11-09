@@ -32,7 +32,7 @@ https://pypi.org/project/fasteasySD/)
 
 ```Python
 #import fasteasySD
-from fasteasySD import FastEasySD as fesd
+from fasteasySD import fasteasySD as fesd
 
 #make LCM_base class
 test = fesd.FastEasySD(device='cpu',use_fp16=False)
@@ -211,7 +211,7 @@ class FastEasySD:
 ### Usage example : 
 
 ```Python
-from fasteasySD import FastEasySD as fesd
+from fasteasySD import fasteasySD as fesd
 
 test = fesd.FastEasySD(device='cpu',use_fp16=False)
 
