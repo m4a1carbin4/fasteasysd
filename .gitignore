@@ -4,4 +4,10 @@ dist/*
 fasteasySD.egg-info/*
 tests/*
 __pycache__
+milkyWonderland_v20.safetensors
+Marth7x5_xl.safetensors
+AsagiMutsuki_v2.safetensors
+akane.safetensors
+chamcham_new_train_lora_2-000001.safetensors
+src/fasteasySD/AsumaToki_v2.safetensors
 
