@@ -1,6 +1,6 @@
 import torch
 
-from diffusers import LCMScheduler, LatentConsistencyModelPipeline, LatentConsistencyModelImg2ImgPipeline, StableDiffusionPipeline
+from diffusers import LCMScheduler, LatentConsistencyModelPipeline, LatentConsistencyModelImg2ImgPipeline, DiffusionPipeline, StableDiffusionXLPipeline
 
 from os import path
 import time
@@ -114,22 +114,22 @@ class LoRa_Sampler:
         if path.isfile(path.abspath(model_path)):
 
             if use_fp16 : 
-                pipe = StableDiffusionPipeline.from_single_file(
+                pipe = DiffusionPipeline.from_single_file(
                     model_path,torch_dtype=torch.float16, use_safetensors=True
                 )
             else :
-                pipe = StableDiffusionPipeline.from_single_file(
+                pipe = DiffusionPipeline.from_single_file(
                     model_path,torch_dtype=torch.float32, use_safetensors=True
                 )
 
         else:
             
             if use_fp16 : 
-                pipe = StableDiffusionPipeline.from_pretrained(
+                pipe = DiffusionPipeline.from_pretrained(
                     model_path,torch_dtype=torch.float16, use_safetensors=True
                 )
             else :
-                pipe = StableDiffusionPipeline.from_pretrained(
+                pipe = DiffusionPipeline.from_pretrained(
                     model_path,torch_dtype=torch.float32, use_safetensors=True
                 )
         
@@ -144,15 +144,15 @@ class LoRa_Sampler:
                 pipe.load_lora_weights(lora_path)
                 pipe.fuse_lora(lora_scale=1)
         
-            adapter_id = None
-            if model_type == "SD":
-                adapter_id = "latent-consistency/lcm-lora-sdv1-5"
-            elif model_type == "SDXL":
-                adapter_id = "latent-consistency/lcm-lora-sdxl"
-            elif model_type == "SSD-1B":
-                adapter_id = "latent-consistency/lcm-lora-ssd-1b"
+        adapter_id = None
+        if model_type == "SD":
+            adapter_id = "latent-consistency/lcm-lora-sdv1-5"
+        elif model_type == "SDXL":
+            adapter_id = "latent-consistency/lcm-lora-sdxl"
+        elif model_type == "SSD-1B":
+            adapter_id = "latent-consistency/lcm-lora-ssd-1b"
 
-            pipe.load_lora_weights(adapter_id)
+        pipe.load_lora_weights(adapter_id)
             
         return pipe
 
@@ -173,7 +173,7 @@ class LoRa_Sampler:
             guidance_scale=cfg,
             num_inference_steps=steps,
             output_type="np",
-            cross_attention_kwargs={"scale": 0.8}
+            #cross_attention_kwargs={"scale": 0.8}
         ).images
 
         print("LCM inference time: ", time.time() - start_time, "seconds")
@@ -470,14 +470,15 @@ class FastEasySD:
         else :
             return False
         
-test = FastEasySD(device='cuda',use_fp16=True)
+test = FastEasySD(device='cpu',use_fp16=False)
 
 test.make_image(mode="txt2img",
-                model_type="SD",model_path="milkyWonderland_v20.safetensors",
-                lora_path=".",lora_name="chamcham_new_train_lora_2-000001.safetensors",
-                prompt="sharp details, sharp focus, anime style, masterpiece, best quality, chamcham(twitch), hair bell, hair ribbon, multicolored hair, two-tone hair, 1girl, solo, orange shirt, long hair, hair clip",
-                n_prompt="noisy, blurry, grainy,text, graphite, abstract, glitch, deformed, mutated, ugly, disfigured, (realistic, lip, nose, tooth, rouge, lipstick, eyeshadow:1.0),black and white, low contrast",
-                seed=0,steps=8,cfg=2,height=960,width=512,num_images=1)
+                model_type="SDXL",model_path="stabilityai/stable-diffusion-xl-base-1.0",
+                lora_path=".",lora_name="naxida2_xl.safetensors",
+                prompt="ultra-detailed,(best quality),((masterpiece)),(highres),original,extremely,naxida, 1girl, nahida (genshin impact), solo, green eyes symbol-shaped pupils, jewelry, bracelet, multicolored hair, side ponytail, hair ornament, dress, pointy ears, long hair, looking at viewer, gradient hair, white dress, bangs, green hair, white hair, cross-shaped pupils, detached sleeves, hair between eyes, sleeveless dress, armpits, sleeveless, sidelocks, upper body, ;q, smile, grey hair, bare shoulders",
+                #prompt="sharp details, sharp focus, anime style, masterpiece, best quality, chamcham(twitch), hair bell, hair ribbon, multicolored hair, two-tone hair, 1girl, solo, orange shirt, long hair, hair clip",
+                n_prompt="bad hand,text,watermark,low quality,medium quality,blurry,censored,wrinkles,deformed,mutated text,watermark,low quality,medium quality,blurry,censored,wrinkles,deformed,mutated",
+                seed=0,steps=8,cfg=2,height=1024,width=1024,num_images=1)
 
 """test.make_image(mode="img2img",
                 model_type="LCM",
