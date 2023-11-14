@@ -5,10 +5,19 @@ This project is designed to enable simple implementation of SD capabilities with
 
 Additionally, This project is designed to work with 'cpu' standalone settings in addition to 'cuda' devices.
 
-by creating a comfyUI-lcm extension in a standalone library format.
+~~by creating a comfyUI-lcm extension in a standalone library format.~~
 
-Original version of comfyUI-lcm : <br>
-https://github.com/0xbitches/ComfyUI-LCM
+Change to full diffusers base (LCMS scheduler and LCM model support officially updated in the diffusers project in Huggingface.)
+
+### 2023.11.14
+add LCM_LoRa support :
+
+With the announcement of LCM_LoRa, support for SD models based on existing SD1.5, SDXL, and SSD-1B is added.
+
+and also support custom lora(locon) with LCM_LoRa (Refer to the lower example image.)
+
+~~Original version of comfyUI-lcm : <br>
+https://github.com/0xbitches/ComfyUI-LCM~~
 
 [![PyPI Downloads](https://img.shields.io/pypi/dm/fasteasySD.svg?label=PyPI%20downloads)](
 https://pypi.org/project/fasteasySD/)
@@ -17,6 +26,8 @@ https://pypi.org/project/fasteasySD/)
 
 ## SD, SDXL txt2img result
 <img src="readme_img/test.png" width="500px"> <img src="readme_img/fesd_0_anime_xl_ganyu3.png" width="500px">
+
+### *Warning* this img is made with custom lora (Twitch_chamcham , Genshin Ganyu).
 
 ## SD, SDXL img2img result
 <img src="readme_img/fesd_i2i_0_0_1.png" width="500px">
@@ -40,14 +51,26 @@ https://pypi.org/project/fasteasySD/)
 #import fasteasySD
 from fasteasySD import fasteasySD as fesd
 
-#make LCM_base class
 test = fesd.FastEasySD(device='cpu',use_fp16=False)
 
-#make img with img2img mode
-test.make_image(mode="img2img",prompt="masterpeice, best quality, anime style",seed=0,steps=4,cfg=8,height=1063,width=827,num_images=1,prompt_strength=0.5,input_image_dir="input.jpg")
+"""test.make_image(mode="txt2img",
+                model_type="SD",model_path="milkyWonderland_v20.safetensors",
+                lora_path=".",lora_name="chamcham_new_train_lora_2-000001.safetensors",
+                prompt="sharp details, sharp focus, anime style, masterpiece, best quality, chamcham(twitch), hair bell, hair ribbon, multicolored hair, two-tone hair, 1girl, solo, orange shirt, long hair, hair clip",
+                n_prompt="bad hand,text,watermark,low quality,medium quality,blurry,censored,wrinkles,deformed,mutated text,watermark,low quality,medium quality,blurry,censored,wrinkles,deformed,mutated",
+                seed=0,steps=8,cfg=2,height=960,width=512,num_images=1)"""
 
-#make img with txt2img mode
-test.make_image(mode="txt2img",prompt="masterpeice, best quality, anime style",seed=0,steps=4,cfg=8,height=768,width=512,num_images=2)
+test.make_image(mode="txt2img",
+                model_type="SDXL",model_path="x2AnimeFinal_gzku.safetensors",
+                lora_path=".",lora_name="ganyu2x_xl.safetensors",
+                prompt="sharp details, sharp focus, ganyu (genshin impact),breasts,horns,blue hair,purple eyes,blush,gloves,bell,bare shoulders,bangs,black gloves,detached sleeves,neck bell,ahoge,sidelocks,goat horns,",
+                n_prompt="bad hand,text,watermark,low quality,medium quality,blurry,censored,wrinkles,deformed,mutated text,watermark,low quality,medium quality,blurry,censored,wrinkles,deformed,mutated",
+                seed=0,steps=8,cfg=2,height=1024,width=1024,num_images=1)
+
+test.make_image(mode="img2img",
+                model_type="SD",model_path="milkyWonderland_v20.safetensors",
+                prompt="sharp details, sharp focus, glasses, anime style, 1man",
+                seed=0,steps=4,cfg=2,height=960,width=512,num_images=1,prompt_strength=0.3,input_image_dir="input.jpg")
 ```
 
 # installation
@@ -207,9 +230,9 @@ class FastEasySD:
         
         model_type : type of model ("LCM","SD","SDXL","SSD-1B")
         
-        lora_path : path of lora file (ex : "./path/for/lora")
+        lora_path : path of lora file (ex : "./path/for/lora") ( if you want to use with huggingface repo than paste repo id )
         
-        lora_name : name for lora file (ex : "test.safetensor")
+        lora_name : name for lora file (ex : "test.safetensor") ( if you want to use with huggingface repo than set this param as None )
         
         input_image_dir : (only for img2img) input image dir
 
@@ -237,16 +260,16 @@ class FastEasySD:
 ### Usage example : 
 
 ```Python
-from fasteasySD import FastEasySD
+from fasteasySD import fasteasySD as fesd
 
-test = FastEasySD(device='cpu',use_fp16=False)
+test = fesd.FastEasySD(device='cpu',use_fp16=False)
 
-test.make_image(mode="txt2img",
+"""test.make_image(mode="txt2img",
                 model_type="SD",model_path="milkyWonderland_v20.safetensors",
                 lora_path=".",lora_name="chamcham_new_train_lora_2-000001.safetensors",
                 prompt="sharp details, sharp focus, anime style, masterpiece, best quality, chamcham(twitch), hair bell, hair ribbon, multicolored hair, two-tone hair, 1girl, solo, orange shirt, long hair, hair clip",
                 n_prompt="bad hand,text,watermark,low quality,medium quality,blurry,censored,wrinkles,deformed,mutated text,watermark,low quality,medium quality,blurry,censored,wrinkles,deformed,mutated",
-                seed=0,steps=8,cfg=2,height=960,width=512,num_images=1)
+                seed=0,steps=8,cfg=2,height=960,width=512,num_images=1)"""
 
 test.make_image(mode="txt2img",
                 model_type="SDXL",model_path="x2AnimeFinal_gzku.safetensors",

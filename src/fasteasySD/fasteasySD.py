@@ -451,7 +451,7 @@ class FastEasySD:
             images = self.return_PIL(images=images)
             self.save_PIL(images,base_name + f"_{counter}")
 
-    def make(self,mode:str,model_path:str,model_type:str,lora_path:str,lora_name:str,**kwargs):
+    def make(self,mode:str,model_path:str,model_type:str,lora_path:str=None,lora_name:str=None,**kwargs):
         
         """ Process user input and forward it to the LCM pipeline.
 

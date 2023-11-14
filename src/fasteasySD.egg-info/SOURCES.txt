@@ -9,7 +9,4 @@ src/fasteasySD.egg-info/SOURCES.txt
 src/fasteasySD.egg-info/dependency_links.txt
 src/fasteasySD.egg-info/requires.txt
 src/fasteasySD.egg-info/top_level.txt
-src/fasteasySD/lcm/__init__.py
-src/fasteasySD/lcm/lcm_i2i_pipline.py
-src/fasteasySD/lcm/lcm_pipline.py
-src/fasteasySD/lcm/lcm_scheduler.py
+tests/test.py
