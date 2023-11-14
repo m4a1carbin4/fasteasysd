@@ -241,12 +241,12 @@ from fasteasySD import FastEasySD
 
 test = FastEasySD(device='cpu',use_fp16=False)
 
-"""test.make_image(mode="txt2img",
+test.make_image(mode="txt2img",
                 model_type="SD",model_path="milkyWonderland_v20.safetensors",
                 lora_path=".",lora_name="chamcham_new_train_lora_2-000001.safetensors",
                 prompt="sharp details, sharp focus, anime style, masterpiece, best quality, chamcham(twitch), hair bell, hair ribbon, multicolored hair, two-tone hair, 1girl, solo, orange shirt, long hair, hair clip",
                 n_prompt="bad hand,text,watermark,low quality,medium quality,blurry,censored,wrinkles,deformed,mutated text,watermark,low quality,medium quality,blurry,censored,wrinkles,deformed,mutated",
-                seed=0,steps=8,cfg=2,height=960,width=512,num_images=1)"""
+                seed=0,steps=8,cfg=2,height=960,width=512,num_images=1)
 
 test.make_image(mode="txt2img",
                 model_type="SDXL",model_path="x2AnimeFinal_gzku.safetensors",
