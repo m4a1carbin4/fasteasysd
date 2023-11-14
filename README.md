@@ -15,13 +15,19 @@ https://pypi.org/project/fasteasySD/)
 
 # Example Result (CPU Only):
 
-## img2img result
+## SD, SDXL txt2img result
+<img src="readme_img/test.png" width="500px"> <img src="readme_img/fesd_0_anime_xl_ganyu3.png" width="500px">
+
+## SD, SDXL img2img result
+<img src="readme_img/fesd_i2i_0_0_1.png" width="500px">
+
+## LCM img2img result
 
 <img src="./readme_img/img2img_example1.png" width="300px"> <img src="./readme_img/img2img_example2.png" width="600px">
 
 ### *Warning* Even if the original is a male image, sometimes it can be converted to a female image. so please Set prompt more accurately.
 
-## txt2img result
+## LCM txt2img result
 <img src="./readme_img/txt2img_example1.png" width="500px"> <img src="./readme_img/txt2img_example2.png" width="500px">
 
 # Usage
@@ -149,16 +155,29 @@ class FastEasySD:
 
         """
 
-    def make(self,mode:str,prompt:str,seed:int,steps:int,cfg:int,
-                   height:int,width:int,num_images:int,prompt_strength:float=0,input_image_dir:str="./input.jpg"):
+    def make(self,mode:str,model_path:str,model_type:str,lora_path:str,lora_name:str,**kwargs):
         
         """ Process user input and forward it to the LCM pipeline.
 
         Forward variable values for image creation to the LCM pipeline and return the corresponding result values
 
         mode : string for LCM mode (txt2img or img2img)
+        
+        model_path : path for model (huggingface repo id or path str)
+        
+        model_type : type of model ("LCM","SD","SDXL","SSD-1B")
+        
+        lora_path : path of lora file (ex : "./path/for/lora")
+        
+        lora_name : name for lora file (ex : "test.safetensor")
+        
+        input_image_dir : (only for img2img) input image dir
 
-        prompt : LCM model input prompt (ex : "masterpeice, best quality, anime style" )
+        output_image_dir : output image dir (it will not make dir)
+
+        prompt : model input prompt (ex : "masterpeice, best quality, anime style" )
+        
+        n_prompt : model negative input prompt (ex : "nsfw,nude,bad quality" )
 
         seed : seed for LCM model (input 0 will make random seed)
 
@@ -172,12 +191,9 @@ class FastEasySD:
 
         prompt_strength : (only for img2img) How Strong will the prompts be applied in the img2img feature
 
-        input_image_dir : (only for img2img) input image dir
-
         """
         
-    def make_image(self,mode:str,prompt:str,seed:int,steps:int,cfg:int,
-                   height:int,width:int,num_images:int,prompt_strength:float=0,input_image_dir:str="./input.jpg",output_image_dir:str="."):
+    def make_image(self,mode:str,model_path:str=None,model_type:str="LCM",lora_path:str=None,lora_name:str=None,output_image_dir:str=".",**kwargs):
         
         """ Most Simplified Image Generation Function
 
@@ -186,8 +202,22 @@ class FastEasySD:
         the output img will be save like output_image_dir/fesd_0.png(txt2img) or output_image_dir/fesd_i2i_0_0.png(img2img)
 
         mode : string for LCM mode (txt2img or img2img)
+        
+        model_path : path for model (huggingface repo id or path str)
+        
+        model_type : type of model ("LCM","SD","SDXL","SSD-1B")
+        
+        lora_path : path of lora file (ex : "./path/for/lora")
+        
+        lora_name : name for lora file (ex : "test.safetensor")
+        
+        input_image_dir : (only for img2img) input image dir
 
-        prompt : LCM model input prompt (ex : "masterpeice, best quality, anime style" )
+        output_image_dir : output image dir (it will not make dir)
+
+        prompt : model input prompt (ex : "masterpeice, best quality, anime style" )
+        
+        n_prompt : model negative input prompt (ex : "nsfw,nude,bad quality" )
 
         seed : seed for LCM model (input 0 will make random seed)
 
@@ -201,33 +231,34 @@ class FastEasySD:
 
         prompt_strength : (only for img2img) How Strong will the prompts be applied in the img2img feature
 
-        input_image_dir : (only for img2img) input image dir
-
-        output_image_dir : output image dir (it will not make dir)
-
         """
 
 ```
 ### Usage example : 
 
 ```Python
-from fasteasySD import fasteasySD as fesd
+from fasteasySD import FastEasySD
 
-test = fesd.FastEasySD(device='cpu',use_fp16=False)
+test = FastEasySD(device='cpu',use_fp16=False)
 
-mode = "img2img"
+"""test.make_image(mode="txt2img",
+                model_type="SD",model_path="milkyWonderland_v20.safetensors",
+                lora_path=".",lora_name="chamcham_new_train_lora_2-000001.safetensors",
+                prompt="sharp details, sharp focus, anime style, masterpiece, best quality, chamcham(twitch), hair bell, hair ribbon, multicolored hair, two-tone hair, 1girl, solo, orange shirt, long hair, hair clip",
+                n_prompt="bad hand,text,watermark,low quality,medium quality,blurry,censored,wrinkles,deformed,mutated text,watermark,low quality,medium quality,blurry,censored,wrinkles,deformed,mutated",
+                seed=0,steps=8,cfg=2,height=960,width=512,num_images=1)"""
 
-images = test.make(mode=mode,seed=0,steps=4,prompt_strength=0.5,cfg=8,prompt="masterpeice, best quality, anime style",height=1063,width=827,num_images=2,input_image_dir="input.jpg")
+test.make_image(mode="txt2img",
+                model_type="SDXL",model_path="x2AnimeFinal_gzku.safetensors",
+                lora_path=".",lora_name="ganyu2x_xl.safetensors",
+                prompt="sharp details, sharp focus, ganyu (genshin impact),breasts,horns,blue hair,purple eyes,blush,gloves,bell,bare shoulders,bangs,black gloves,detached sleeves,neck bell,ahoge,sidelocks,goat horns,",
+                n_prompt="bad hand,text,watermark,low quality,medium quality,blurry,censored,wrinkles,deformed,mutated text,watermark,low quality,medium quality,blurry,censored,wrinkles,deformed,mutated",
+                seed=0,steps=8,cfg=2,height=1024,width=1024,num_images=1)
 
-if mode == "txt2img":
-            
-    pil_images = test.return_PIL(images)
-
-    test.save_PIL(pils=pil_images,save_name="./fesd")
-
-elif mode == "img2img":
-            
-    test.i2i_batch_save(images_list=images,base_name="./fesd_i2i")
+test.make_image(mode="img2img",
+                model_type="SD",model_path="milkyWonderland_v20.safetensors",
+                prompt="sharp details, sharp focus, glasses, anime style, 1man",
+                seed=0,steps=4,cfg=2,height=960,width=512,num_images=1,prompt_strength=0.3,input_image_dir="input.jpg")
 
 ```
 
