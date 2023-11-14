@@ -1,6 +1,9 @@
 # fasteasySD
 
-<b>fasteasySD</b> is Implementation library of txt2img, img2img function via Latent Consistency Model (LCM) model<br>
+<b>fasteasySD</b> is Implementation library of txt2img, img2img function via Latent Consistency Model (LCM) model or LCM_LoRa with SD1.5,SDXL or SSD-1B<br>
+
+LCM Repo : https://github.com/luosiallen/latent-consistency-model
+
 This project is designed to enable simple implementation of SD capabilities within other projects
 
 Additionally, This project is designed to work with 'cpu' standalone settings in addition to 'cuda' devices.
