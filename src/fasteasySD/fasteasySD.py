@@ -1,6 +1,6 @@
 import torch
 
-from diffusers import LCMScheduler, LatentConsistencyModelPipeline, LatentConsistencyModelImg2ImgPipeline, DiffusionPipeline, StableDiffusionXLPipeline
+from diffusers import LCMScheduler, LatentConsistencyModelPipeline, LatentConsistencyModelImg2ImgPipeline, DiffusionPipeline, StableDiffusionPipeline, StableDiffusionImg2ImgPipeline,StableDiffusionXLPipeline,StableDiffusionXLImg2ImgPipeline
 
 from os import path
 import time
@@ -111,27 +111,59 @@ class LoRa_Sampler:
 
     def make_pipeline(self, model_path, lora_path, lora_name, use_fp16, model_type):
 
+        adapter_id = None
+        if model_type == "SD":
+            adapter_id = "latent-consistency/lcm-lora-sdv1-5"
+        elif model_type == "SDXL":
+            adapter_id = "latent-consistency/lcm-lora-sdxl"
+        elif model_type == "SSD-1B":
+            adapter_id = "latent-consistency/lcm-lora-ssd-1b"
+
         if path.isfile(path.abspath(model_path)):
 
-            if use_fp16 : 
-                pipe = DiffusionPipeline.from_single_file(
-                    model_path,torch_dtype=torch.float16, use_safetensors=True
-                )
+            if model_type in ["SDXL","SSD-1B"]:
+
+                if use_fp16 : 
+                    pipe = StableDiffusionXLPipeline.from_single_file(
+                        model_path,torch_dtype=torch.float16, use_safetensors=True
+                    )
+                else :
+                    pipe = StableDiffusionXLPipeline.from_single_file(
+                        model_path,torch_dtype=torch.float32, use_safetensors=True
+                    )
             else :
-                pipe = DiffusionPipeline.from_single_file(
-                    model_path,torch_dtype=torch.float32, use_safetensors=True
-                )
+                
+                if use_fp16 : 
+                    pipe = StableDiffusionPipeline.from_single_file(
+                        model_path,torch_dtype=torch.float16, use_safetensors=True
+                    )
+                else :
+                    pipe = StableDiffusionPipeline.from_single_file(
+                        model_path,torch_dtype=torch.float32, use_safetensors=True
+                    )
 
         else:
-            
-            if use_fp16 : 
-                pipe = DiffusionPipeline.from_pretrained(
-                    model_path,torch_dtype=torch.float16, use_safetensors=True
-                )
+        
+            if model_type in ["SDXL","SSD-1B"]:
+
+                if use_fp16 : 
+                    pipe = StableDiffusionXLPipeline.from_pretrained(
+                        model_path,torch_dtype=torch.float16, use_safetensors=True
+                    )
+                else :
+                    pipe = StableDiffusionXLPipeline.from_pretrained(
+                        model_path,torch_dtype=torch.float32, use_safetensors=True
+                    )
             else :
-                pipe = DiffusionPipeline.from_pretrained(
-                    model_path,torch_dtype=torch.float32, use_safetensors=True
-                )
+                
+                if use_fp16 : 
+                    pipe = StableDiffusionPipeline.from_pretrained(
+                        model_path,torch_dtype=torch.float16, use_safetensors=True
+                    )
+                else :
+                    pipe = StableDiffusionPipeline.from_pretrained(
+                        model_path,torch_dtype=torch.float32, use_safetensors=True
+                    )
         
         pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config, use_karras_sigmas=True)
 
@@ -143,14 +175,6 @@ class LoRa_Sampler:
             else :
                 pipe.load_lora_weights(lora_path)
                 pipe.fuse_lora(lora_scale=1)
-        
-        adapter_id = None
-        if model_type == "SD":
-            adapter_id = "latent-consistency/lcm-lora-sdv1-5"
-        elif model_type == "SDXL":
-            adapter_id = "latent-consistency/lcm-lora-sdxl"
-        elif model_type == "SSD-1B":
-            adapter_id = "latent-consistency/lcm-lora-ssd-1b"
 
         pipe.load_lora_weights(adapter_id)
             
@@ -161,6 +185,10 @@ class LoRa_Sampler:
             self.pipe = self.make_pipeline(model_path=model_path, lora_path=lora_path, lora_name=lora_name, use_fp16=use_fp16, model_type=model_type)
 
             self.pipe.to(device)
+            
+            self.pipe.enable_vae_slicing()
+            self.pipe.enable_vae_tiling()
+            #self.pipe.enable_xformers_memory_efficient_attention()
 
         torch.manual_seed(seed)
         start_time = time.time()
@@ -180,6 +208,119 @@ class LoRa_Sampler:
         images_tensor = torch.from_numpy(result)
 
         return (images_tensor,)
+    
+class LoRa_img2img_Sampler:
+    def __init__(self):
+        self.scheduler = None
+        self.pipe = None
+
+    def make_pipeline(self, model_path, lora_path, lora_name, use_fp16, model_type):
+
+        adapter_id = None
+        if model_type == "SD":
+            adapter_id = "latent-consistency/lcm-lora-sdv1-5"
+        elif model_type == "SDXL":
+            adapter_id = "latent-consistency/lcm-lora-sdxl"
+        elif model_type == "SSD-1B":
+            adapter_id = "latent-consistency/lcm-lora-ssd-1b"
+
+        if path.isfile(path.abspath(model_path)):
+
+            if model_type in ["SDXL","SSD-1B"]:
+
+                if use_fp16 : 
+                    pipe = StableDiffusionXLImg2ImgPipeline.from_single_file(
+                        model_path,torch_dtype=torch.float16, use_safetensors=True
+                    )
+                else :
+                    pipe = StableDiffusionXLImg2ImgPipeline.from_single_file(
+                        model_path,torch_dtype=torch.float32, use_safetensors=True
+                    )
+            else :
+                
+                if use_fp16 : 
+                    pipe = StableDiffusionImg2ImgPipeline.from_single_file(
+                        model_path,torch_dtype=torch.float16, use_safetensors=True
+                    )
+                else :
+                    pipe = StableDiffusionImg2ImgPipeline.from_single_file(
+                        model_path,torch_dtype=torch.float32, use_safetensors=True
+                    )
+
+        else:
+        
+            if model_type in ["SDXL","SSD-1B"]:
+
+                if use_fp16 : 
+                    pipe = StableDiffusionXLImg2ImgPipeline.from_pretrained(
+                        model_path,torch_dtype=torch.float16, use_safetensors=True
+                    )
+                else :
+                    pipe = StableDiffusionXLImg2ImgPipeline.from_pretrained(
+                        model_path,torch_dtype=torch.float32, use_safetensors=True
+                    )
+            else :
+                
+                if use_fp16 : 
+                    pipe = StableDiffusionImg2ImgPipeline.from_pretrained(
+                        model_path,torch_dtype=torch.float16, use_safetensors=True
+                    )
+                else :
+                    pipe = StableDiffusionImg2ImgPipeline.from_pretrained(
+                        model_path,torch_dtype=torch.float32, use_safetensors=True
+                    )
+        
+        pipe.scheduler = LCMScheduler.from_config(pipe.scheduler.config, use_karras_sigmas=True)
+
+        if lora_path is not None:
+
+            if lora_name is not None :
+                pipe.load_lora_weights(lora_path,weight_name=lora_name)
+                pipe.fuse_lora(lora_scale=1)
+            else :
+                pipe.load_lora_weights(lora_path)
+                pipe.fuse_lora(lora_scale=1)
+
+        pipe.load_lora_weights(adapter_id)
+            
+        return pipe
+
+    def sample(self, model_path, lora_path, lora_name, model_type, seed, steps, cfg, images, positive_prompt, negative_prompt, prompt_strength, height, width, use_fp16, device):
+        if self.pipe is None :
+            self.pipe = self.make_pipeline(model_path=model_path, lora_path=lora_path, lora_name=lora_name, use_fp16=use_fp16, model_type=model_type)
+
+            self.pipe.to(device)
+            
+            #self.pipe.enable_vae_slicing()
+            #self.pipe.enable_vae_tiling()
+            #self.pipe.enable_xformers_memory_efficient_attention()
+
+        torch.manual_seed(seed)
+        start_time = time.time()
+        
+        images = np.transpose(images, (0, 3, 1, 2))
+        results = []
+        for i in range(images.shape[0]):
+            image = images[i]
+            result = self.pipe(
+                image=image,
+                prompt=positive_prompt,
+                negative_prompt=negative_prompt,
+                strength=prompt_strength,
+                width=width,
+                height=height,
+                guidance_scale=cfg,
+                num_inference_steps=steps,
+                output_type="np",
+                ).images
+            tensor_results = [torch.from_numpy(np_result) for np_result in result]
+            results.extend(tensor_results)
+
+        results = torch.stack(results)
+        
+        print(f"{model_type} img2img inference time: ", time.time() - start_time, "seconds")
+        
+        return (results,)
 
 class FastEasySD:
     """ LCM model pipeline control class.
@@ -213,6 +354,7 @@ class FastEasySD:
         self.lcm_sampler = LCM_Sampler()
         self.lcm_i2i_sampler = LCM_img2img_Sampler()
         self.lora_sampler = LoRa_Sampler()
+        self.lora_i2i_sampler = LoRa_img2img_Sampler()
     
     def make_seed(self,seed: int, random_seed:bool) -> int:
 
@@ -401,9 +543,13 @@ class FastEasySD:
         elif mode == "img2img":
 
             image = self.__load_img(input_image_dir)
-
-            images = self.lcm_i2i_sampler.sample(seed=seed,steps=steps,prompt_strength=prompt_strength,cfg=cfg,images=image,
+            
+            if model_type == "LCM":
+                images = self.lcm_i2i_sampler.sample(seed=seed,steps=steps,prompt_strength=prompt_strength,cfg=cfg,images=image,
                              positive_prompt=prompt,height=height,width=width,num_images=num_images,use_fp16=self.user_fp16,device=self.user_device)
+            elif model_type in ["SD","SDXL","SSD-1B"]:
+                images = self.lora_i2i_sampler.sample(model_path=model_path, lora_path=lora_path, lora_name=lora_name, model_type=model_type, seed=seed,steps=steps,
+                             prompt_strength=prompt_strength,cfg=cfg,images=image,positive_prompt=prompt, negative_prompt=n_prompt, height=height,width=width,use_fp16=self.user_fp16,device=self.user_device)
             
         else :
 
@@ -469,18 +615,3 @@ class FastEasySD:
         
         else :
             return False
-        
-test = FastEasySD(device='cpu',use_fp16=False)
-
-test.make_image(mode="txt2img",
-                model_type="SDXL",model_path="stabilityai/stable-diffusion-xl-base-1.0",
-                lora_path=".",lora_name="naxida2_xl.safetensors",
-                prompt="ultra-detailed,(best quality),((masterpiece)),(highres),original,extremely,naxida, 1girl, nahida (genshin impact), solo, green eyes symbol-shaped pupils, jewelry, bracelet, multicolored hair, side ponytail, hair ornament, dress, pointy ears, long hair, looking at viewer, gradient hair, white dress, bangs, green hair, white hair, cross-shaped pupils, detached sleeves, hair between eyes, sleeveless dress, armpits, sleeveless, sidelocks, upper body, ;q, smile, grey hair, bare shoulders",
-                #prompt="sharp details, sharp focus, anime style, masterpiece, best quality, chamcham(twitch), hair bell, hair ribbon, multicolored hair, two-tone hair, 1girl, solo, orange shirt, long hair, hair clip",
-                n_prompt="bad hand,text,watermark,low quality,medium quality,blurry,censored,wrinkles,deformed,mutated text,watermark,low quality,medium quality,blurry,censored,wrinkles,deformed,mutated",
-                seed=0,steps=8,cfg=2,height=1024,width=1024,num_images=1)
-
-"""test.make_image(mode="img2img",
-                model_type="LCM",
-                prompt="sharp details, sharp focus, glasses, anime style, 1man",
-                seed=0,steps=8,cfg=2,height=960,width=512,num_images=1,prompt_strength=0.8,input_image_dir="input.jpg")"""
