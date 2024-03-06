@@ -10,11 +10,9 @@ AsagiMutsuki_v2.safetensors
 akane.safetensors
 chamcham_new_train_lora_2-000001.safetensors
 src/fasteasySD/AsumaToki_v2.safetensors
-fesd_0.png
-fesd_0_chamcham.png
-fesd_i2i_0_0.png
+fesd*
 input.jpg
 naxida2_xl.safetensors
 x2AnimeFinal_gzku.safetensors
 ganyu2x_xl.safetensors
-build_command
+build_command*

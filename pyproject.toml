@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "fasteasySD"
-version = "0.1.7"
+version = "0.3.0"
 authors = [
   { name="WaGaNaWa", email="m4a1carbin4@gmail.com" },
 ]
@@ -25,6 +25,9 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: OS Independent",
 ]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
 
 [tool.setuptools.package-data]
 'fasteasySD' = ['*.json']
